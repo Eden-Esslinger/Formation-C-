@@ -13,3 +13,25 @@ namespace serie_d_exercices
         }
     }
 }
+namespace Serie_I
+{
+    public static class ElementaryOperations
+    {
+        public static void BasicOperation(int a, int b, char operation)
+        {
+           
+
+           
+        }
+
+        public static void IntegerDivision(int a, int b)
+        {
+            //TODO
+        }
+
+        public static void Pow(int a, int b)
+        {
+            //TODO
+        }
+    }
+}
