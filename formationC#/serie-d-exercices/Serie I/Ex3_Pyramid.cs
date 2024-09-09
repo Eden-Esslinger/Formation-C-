@@ -10,7 +10,21 @@ namespace Serie_I
     {
         public static void PyramidConstruction(int n, bool isSmooth)
         {
-            //TODO
+            //  int blocs = 0;
+          //  for (int j = 1; j <= 2 * j - 1; j++)
+           // {
+                //    blocs = 2 * j - 1;
+           // }
+            for (int i = 1; i <= n; i++) 
+            {
+                for (int j = 1; j <= n; j++)
+                 
+
+                { Console.Write("+"); }
+                Console.WriteLine();
+              //  j++;
+                
+            }      
         }
     }
 }
