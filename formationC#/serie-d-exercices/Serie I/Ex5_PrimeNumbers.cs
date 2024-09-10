@@ -1,4 +1,6 @@
-﻿using System;
+﻿
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,8 +12,19 @@ namespace Serie_I
     {
         static bool IsPrime(int valeur)
         {
-            //TODO
-            return false;
+            double c = Math.Sqrt(valeur);
+            int d = (int) c;
+            for (int b = 2; b <= d; b++)
+            {
+                if (valeur % b == 0)
+                    break;
+                else 
+                    continue;
+            }
+            if (b == d)
+                return true;
+            else
+                return false;
         }
 
         public static void DisplayPrimes()
