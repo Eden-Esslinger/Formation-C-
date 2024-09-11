@@ -10,7 +10,13 @@ namespace Serie_II
     {
         public static int[][] BuildingMatrix(int[] leftVector, int[] rightVector)
         {
-            //TODO
+            for (int i = 0; i < leftVector.Length; i++)
+            {
+                for (int j = 0; i < rightVector.Length; j++)
+                {
+                    int a = leftVector[i] * rightVector[i]
+                }
+            }
             return new int[0][];
         }
 

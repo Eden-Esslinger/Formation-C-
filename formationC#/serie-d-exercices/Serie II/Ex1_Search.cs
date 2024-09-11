@@ -11,17 +11,17 @@ namespace Serie_II
     {
         public static int LinearSearch(int[] tableau, int valeur)
         {
-            for (int i = 0; i < tableau.Length; i++)
+            for (int i = 0; i < tableau.Length; i++) // recherche de la valeur dans le tableau
             {
-                if (tableau.Length == 0)
+                if (tableau.Length == 0) // tableau vide
                     return -1;
 
-                else if (valeur == tableau[i])
+                else if (valeur == tableau[i]) // valeur trouvé, retour de l'indice du tableau
                 {
                     return i;
                     break;
                 }
-                else if (i == tableau.Length)
+                else if (i == tableau.Length) // valeur pas dans le tableau
 
                     return -1;
 
@@ -33,51 +33,37 @@ namespace Serie_II
         }
 
         public static int BinarySearch(int[] tableau, int valeur)
+
         {
+            if (tableau.Length == 0) // tableau vide
+                return -1;
+
             int i = tableau.Length / 2;
-            if (tableau.Length == 0)
-                return -1;
-
-            if (valeur == tableau[i])
+            int moit = i / 2;
+            int cp = 0;
             {
-                return i;
-               
-            }
-            else if (valeur < tableau[i])
-            {
-                for (int j = 0; j < tableau.Length / 2; j++)
+                while (i < tableau.Length && i >= 0 && moit != 0)
                 {
-                    if (valeur == tableau[j])
+                    moit /= 2;
+
+                    if (valeur == tableau[i]) // valeur trouvé, retour indice
                     {
-                        return j;
-                        break;
+                        return i;
                     }
-                    else if (j == tableau.Length / 2)
-
-                        return -1;
-
-                    else
-                        continue;
-                }
-            }
-            else if (valeur > tableau[i])
-            {
-                for (int k = tableau.Length / 2; k < tableau.Length; k++)
-                {
-                    if (valeur == tableau[k])
-                    {
-                        return k;
-                        break;
+                    else if (valeur < tableau[i]) // si valeur inférieur à valeur du milieu du tableau, on ne prend en compte que la 
+                    {                             // premiere moitié du tableau
+                        i -= moit;
+                        cp++;
                     }
-                    else if (k == tableau.Length)
+                    else if (valeur > tableau[i]) // si valeur inférieur à valeur du milieu du tableau, on ne prend en compte que la 
+                    {                             // deuxieme moitié du tableau
+                        i += moit;
+                        cp++;
+                    }
 
-                        return -1;
-
-                    else
-                        continue;
                 }
-            }
-                return -1;
+                    return -1;
+             }
         }
     }
 }

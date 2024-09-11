@@ -16,7 +16,7 @@ namespace Serie_II
             Console.WriteLine("-----------------------------------");
 
             int[] arr = { 1, -5, 10, -3, 0, 4, 2, -7 };
-            int val = -5;
+            int val = 3;
             Console.WriteLine(Search.LinearSearch(arr, val));
             Array.Sort(arr);
             Console.WriteLine(Search.BinarySearch(arr, val));
