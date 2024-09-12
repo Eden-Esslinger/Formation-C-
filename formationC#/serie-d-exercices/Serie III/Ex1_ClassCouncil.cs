@@ -21,7 +21,6 @@ namespace Serie_III
             {
                 var line = reader.ReadLine();
                 listA.Add(line);
-               Console.WriteLine(listA.Count);
             }
             foreach (var line2 in listA)
             {
@@ -30,12 +29,9 @@ namespace Serie_III
                     string[] valeurs = line2.Split(';');
                     foreach (var val in valeurs)
                     {
+
                         listB.Add(val);
                     }
-                    //    listB.RemoveRange(0, 2);
-                    //    listB.RemoveRange(3, 2);
-                    //    listB.RemoveRange(6, 2);
-                    //    Console.WriteLine(listB.Count);
 
                 }
                 else if (line2.Contains("Maths"))
@@ -50,10 +46,8 @@ namespace Serie_III
                   listB.RemoveRange(0, 2);
                   listB.RemoveRange(1, 2);
                   listB.RemoveRange(2, 2);
-                  Console.WriteLine(listB.Count);
                   listC.RemoveRange(0, 2);
                   listC.RemoveRange(1, 2);
-                  Console.WriteLine(listC.Count);
 
 
                  double somme = 0;
@@ -65,17 +59,27 @@ namespace Serie_III
                 cp++;
             }
              double moyenneH = somme / cp;
-             Console.WriteLine(moyenneH);
+             Console.WriteLine($"la moyenne en histoire est de {moyenneH:F1} ");
 
-            //    string[] valeurs = line3.Split(';');
-            //    foreach (string val in valeurs)
-            //    { 
-            //    Console.WriteLine(val);
-            
-                
-               
-            
-                
+            double somme2 = 0;
+            int cp2 = 0;
+            foreach (string line4 in listC)
+            {
+                double vals2 = Convert.ToDouble(line4);
+                somme2 += vals2;
+                cp2++;
+            }
+            double moyenneM = somme2 / cp2;
+            Console.WriteLine($"la moyenne en histoire est de {moyenneM:F1} ");
+            string entete = $"Matière;Moyenne";
+            string histoire = $"Histoire;{moyenneH:F1}";
+            string maths = $"Maths;{moyenneM:F1}";
+
+            StreamWriter sortie = new StreamWriter(output);
+            sortie.WriteLine(entete);    
+            sortie.WriteLine(histoire);
+            sortie.WriteLine(maths) ;
+            sortie.Close();
         }       
     }
 }
