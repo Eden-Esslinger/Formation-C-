@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Serie_IV
+namespace serie_4
+
+
 {
     public static class BracketsControl
     {
@@ -34,11 +36,11 @@ namespace Serie_IV
                         {
                             return false;
                         }
-                        char required_prev_opening = opening.ElementAt(closing.LastIndexof(i));
+                        char required_prev_opening = opening.ElementAt(closing.LastIndexOf(i));
                           
                         if (required_prev_opening != (char)opening_brackets.Last())
                         {
-                            return false
+                            return false;
                         }
                         opening_brackets.RemoveAt(opening_brackets.Count - 1);
                         closing_brackets.RemoveAt(closing_brackets.Count - 1);
