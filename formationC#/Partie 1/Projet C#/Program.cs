@@ -13,13 +13,19 @@ namespace Projet_C_
         {
             string path = Directory.GetCurrentDirectory();
             string input = path + @"\Comptes.csv";
-            Console.WriteLine(input);
-            Compteslec(input);
+            string input2 = path + @"\transactions.csv";
+         //   Console.WriteLine(input);
+            
             Comptes comptes = new Comptes();
-         //   comptes.Compte = 3;
-          //  comptes._solde = 500;
-         //   var t = comptes.Affichagesolde();
-         //   Console.WriteLine(t);
+            comptes.Compteslec(input);
+
+            Transactions transactions = new Transactions();
+            transactions.Transactionslec(input2);
+
+            //   comptes.Compte = 3;
+            //  comptes.Solde = 500;
+            //   var t = comptes.Affichagesolde();
+            //   Console.WriteLine(t);
 
 
 
@@ -29,25 +35,26 @@ namespace Projet_C_
             Console.WriteLine("Press any key to exit.");
             Console.ReadKey();
         }
-        static public void Compteslec(string input)
+      /*  static public void Compteslec(string input)
         {
             var d = new Dictionary<int, decimal>();
             using (FileStream file = File.OpenRead(input))
 
-            using (StreamReader str = new StreamReader(file))
+           /// using (StreamReader str = new StreamReader(file))
 
-                while (!str.EndOfStream)
+              /*  while (!str.EndOfStream)
                 {
                     string line = str.ReadLine();
-                      int numcpt; 
-                    string[]
-                       int.TryParse(line.Split(';')[0],out numcpt);
-                       decimal solde;
-                      var v = line.Split(";");
+                      int numcpt;
+                  //  decimal solde;
+                 //   string[]
+                  //     int.TryParse(line.Split(';')[0],out numcpt, out solde );
+                   //    decimal solde;
+                   //   var v = line.Split(";");
                     //    decimal.TryParse(line.Split(";")[1],out solde);
                     //   d.Add(numcpt, solde);
                  //   Console.WriteLine(d[1]);
-                }
-        }
+                }*/
+        
     }
 }
