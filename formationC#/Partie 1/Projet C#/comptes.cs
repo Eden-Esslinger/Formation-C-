@@ -5,17 +5,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Globalization;
 
 namespace Projet_C_
 {
+     
     public class Comptes
     {
         public int Compte;
         public decimal Solde;
 
+        
 
         public static Dictionary<int, Comptes> Compteslec(string input)
         {
+            CultureInfo culture = (CultureInfo)CultureInfo.CurrentCulture.Clone();
+            culture.NumberFormat.NumberDecimalSeparator = ",";
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+
             var d = new Dictionary<int, Comptes>();
             using (FileStream file = File.OpenRead(input))
 
@@ -26,17 +34,32 @@ namespace Projet_C_
                     string line = str.ReadLine();
                     int numcpt;
                     var mot = line.Split(';');
-                    int.TryParse(mot[0], out numcpt);
+                    bool numvalide = int.TryParse(mot[0], out numcpt);
+                    if (!numvalide)
+                    {
+                        continue;
+                    }
                     decimal solde;
-                    decimal.TryParse(mot[1], out solde);
+                    mot[1] = mot[1].Replace(".", ",");
+                    if (string.IsNullOrWhiteSpace(mot[1]))
+                    {
+                        mot[1] = "0";
+                    }
+
+                    bool soldevalide = decimal.TryParse(mot[1], out solde);
+                   
+                    if (!soldevalide)
+                    {
+                        continue;
+                    }
 
                     Comptes comptes = new Comptes();
                     comptes.Compte = numcpt;
                     comptes.Solde = solde;
                     if (d.ContainsKey(numcpt))
-                        break;
-                    else if (numcpt < 0)
-                        break;
+                        continue;
+                    else if (numcpt < 1)
+                        continue;
                     else
                     {
                         d.Add(numcpt, comptes);
@@ -56,6 +79,7 @@ namespace Projet_C_
         
         public static Dictionary<int, Transactions> Transactionslec(string input2)
         {
+           
             var d2 = new Dictionary<int, Transactions>();
             using (FileStream file = File.OpenRead(input2))
 
@@ -70,10 +94,33 @@ namespace Projet_C_
                     int dest;
 
                     var mot = line.Split(';');
-                    int.TryParse(mot[0], out id);
-                    decimal.TryParse(mot[1], out montant);
-                    int.TryParse(mot[2], out exp);
-                    int.TryParse(mot[3], out dest);
+                    bool idvalide = int.TryParse(mot[0], out id);
+                    if (!idvalide)
+                    {
+                        continue;
+                    }
+                    mot[1] = mot[1].Replace(".", ",");
+                    if(string.IsNullOrWhiteSpace(mot[1]))
+                    {
+                        mot[1] = "0";
+                    }
+
+                    //int.TryParse(mot[0], out id);
+                    bool montantvalide = decimal.TryParse(mot[1], out montant);
+                    if (!montantvalide)
+                    {
+                        continue;
+                    }
+                    bool expvalide = int.TryParse(mot[2], out exp);
+                    if (!expvalide)
+                    {
+                        continue;
+                    }
+                    bool destvalide = int.TryParse(mot[3], out dest);
+                    if (!destvalide)
+                    {
+                        continue;
+                    }
 
                     Transactions transactions = new Transactions();
                     transactions.Identifiant = id;
@@ -81,9 +128,9 @@ namespace Projet_C_
                     transactions.Expéditeur = exp;
                     transactions.Destinataire = dest;
                     if (d2.ContainsKey(id))
-                        break;
+                        continue;
                     else if (id < 1)
-                        break;
+                        continue;
                     else
                     {
                         d2.Add(id, transactions);
@@ -104,11 +151,17 @@ namespace Projet_C_
                 decimal montant = valeur.Montant;
                 int exp = valeur.Expéditeur;
                 int dest = valeur.Destinataire;
-
+                valeur.Statut = "KO";
 
                 decimal solde_exp;
                 decimal solde_dest;
                 decimal solde_final ;
+
+                if (exp == 0 && dest == 0)
+                {
+                    valeur.Statut = "KO";
+                    continue;
+                }
 
                 if (exp == 0)
                 {
@@ -141,6 +194,11 @@ namespace Projet_C_
                         valeur.Statut = "KO";
                     }
                 }
+                else if (dest == exp)
+                {
+                    valeur.Statut = "OK";
+                    continue;
+                }
 
                 else if (dest > 0 && exp > 0)
                 {
@@ -167,13 +225,14 @@ namespace Projet_C_
                     }
                     catch (KeyNotFoundException)
                     {
-                        break;
+                        {
+                            valeur.Statut = "KO";
+                            continue;
+                        }
                     }
 
                    
-
-                   
-                 }
+                }
 
             }
 
