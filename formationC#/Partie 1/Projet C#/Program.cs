@@ -14,12 +14,15 @@ namespace Projet_C_
             string path = Directory.GetCurrentDirectory();
             string input = path + @"\Comptes.csv";
             string input2 = path + @"\transactions.csv";
+            string output = path + @"\statuts.csv";
             //   Console.WriteLine(input);
 
             Dictionary<int, Comptes> dico = Comptes.Compteslec(input);
 
             Dictionary<int, Transactions> dico2 = Transactions.Transactionslec(input2);
             Transactions.Transaction(dico2, dico);
+
+            Transactions.Statuts(output, dico2);
             //   comptes.Compte = 3;
             //  comptes.Solde = 500;
             //   var t = comptes.Affichagesolde();

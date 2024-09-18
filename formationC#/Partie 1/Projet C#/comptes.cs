@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Projet_C_
 {
@@ -32,7 +33,14 @@ namespace Projet_C_
                     Comptes comptes = new Comptes();
                     comptes.Compte = numcpt;
                     comptes.Solde = solde;
-                    d.Add(numcpt, comptes);
+                    if (d.ContainsKey(numcpt))
+                        break;
+                    else if (numcpt < 0)
+                        break;
+                    else
+                    {
+                        d.Add(numcpt, comptes);
+                    }
                 }
             return d;
         }
@@ -44,8 +52,8 @@ namespace Projet_C_
         public decimal Montant;
         public int Expéditeur;
         public int Destinataire;
-
-
+        public string Statut;
+        
         public static Dictionary<int, Transactions> Transactionslec(string input2)
         {
             var d2 = new Dictionary<int, Transactions>();
@@ -72,8 +80,14 @@ namespace Projet_C_
                     transactions.Montant = montant;
                     transactions.Expéditeur = exp;
                     transactions.Destinataire = dest;
-
-                    d2.Add(id, transactions);
+                    if (d2.ContainsKey(id))
+                        break;
+                    else if (id < 1)
+                        break;
+                    else
+                    {
+                        d2.Add(id, transactions);
+                    }
 
                 }
             return d2;
@@ -83,7 +97,6 @@ namespace Projet_C_
         {
             foreach (KeyValuePair<int, Transactions> transaction in dico2) 
             {
-                var t = 0;
 
                Transactions valeur = transaction.Value;
 
@@ -91,6 +104,7 @@ namespace Projet_C_
                 decimal montant = valeur.Montant;
                 int exp = valeur.Expéditeur;
                 int dest = valeur.Destinataire;
+
 
                 decimal solde_exp;
                 decimal solde_dest;
@@ -103,11 +117,12 @@ namespace Projet_C_
                     if (montant > 0)
                     {
                         solde_final = solde_dest + montant;
-                        break;
+                        destinataire.Solde = solde_final;
+                        valeur.Statut = "OK";
                     }
                     else
                     {
-                        // erreur
+                        valeur.Statut = "KO";
                     }
                 }
 
@@ -115,67 +130,70 @@ namespace Projet_C_
                 {
                     Comptes expediteur = dico[exp];
                     solde_exp = expediteur.Solde;
-                    if (solde_exp > montant && montant > 0)
+                    if (solde_exp >= montant && montant > 0)
                     {
                         solde_final = solde_exp - montant;
-                        break;
+                        expediteur.Solde = solde_final;
+                        valeur.Statut = "OK";
                     }
                     else
                     {
-                        // erreur
+                        valeur.Statut = "KO";
                     }
                 }
 
-                Comptes Expediteur = dico[exp];
-                solde_exp = Expediteur.Solde;
-
-                Comptes Destinataire = dico[dest];
-                solde_dest = Destinataire.Solde;
-
-
-                
-
-             /*   foreach (KeyValuePair<int, Comptes> comptes in dico)
+                else if (dest > 0 && exp > 0)
                 {
-                    solde_final = comptes.Value;
-
-                    if (exp == 0 && dest == comptes.Key)
+                    try
                     {
-                        solde_final += montant;
+                        Comptes Expediteur = dico[exp];
+                        solde_exp = Expediteur.Solde;
+
+                        Comptes Destinataire = dico[dest];
+                        solde_dest = Destinataire.Solde;
+
+                        if (solde_exp >= montant && montant > 0)
+                        {
+                            solde_exp -= montant;
+                            solde_dest += montant;
+                            Expediteur.Solde = solde_exp;
+                            Destinataire.Solde = solde_dest;
+                            valeur.Statut = "OK";
+                        }
+                        else
+                        {
+                            valeur.Statut = "KO";
+                        }
+                    }
+                    catch (KeyNotFoundException)
+                    {
                         break;
                     }
 
-                    else if (dest == 0 && exp == comptes.Key)
-                    {
-                        solde_final -= montant;
-                        break;
-                    }
+                   
 
-                    else if (exp == comptes.Key )
-                    {
-                        solde_final -= montant;
-                        break;
-                    }
-                    else if (dest == comptes.Key )
-                    {
-                        solde_final += montant;
-                        break;
-                    }*/
+                   
+                 }
 
+            }
 
+            foreach (var comptess in dico)
+            {
+                Console.WriteLine($"{comptess.Key} : {comptess.Value.Solde} €");
+            }
+        }
 
+        public static void Statuts(string output, Dictionary<int, Transactions> dico2)
+        {
+            using (FileStream file3 = File.OpenWrite(output)) 
+            using (StreamWriter sortie = new StreamWriter(file3))
 
-
-
-
-                  /*  switch (comptes.Key)
-                    {
-                        case 
-                    }
-
-                } */
-
-
+            {
+                foreach (KeyValuePair<int, Transactions> statut in dico2)
+                {
+                    Transactions statuts = statut.Value;
+                    sortie.WriteLine($"{statuts.Identifiant};{statuts.Statut}");
+                }
             }
         }
     }
