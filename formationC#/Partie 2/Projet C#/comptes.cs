@@ -18,22 +18,22 @@ namespace Projet_C_
 
         public static Dictionary<int, Gestionnaires> Gestionnaireslec(string input0)
         {
-            var d0 = new Dictionary<int, Gestionnaires>();
-            using (FileStream file0 = File.OpenRead(input0))
+            var d0 = new Dictionary<int, Gestionnaires>(); // création du dictionnaire de gestionnaires
+            using (FileStream file0 = File.OpenRead(input0)) // ouverture du fichier gestionnaire
 
-            using (StreamReader str = new StreamReader(file0))
+            using (StreamReader str = new StreamReader(file0)) // lecture du fichier gestionnaire
 
                 while (!str.EndOfStream)
                 {
                     string line = str.ReadLine();
-                    int idgest;
+                    int idgest; // id du gestionnaire
                     var mot = line.Split(';');
-                    bool numvalide = int.TryParse(mot[0], out idgest);
+                    bool numvalide = int.TryParse(mot[0], out idgest); // verif si on a bien un entier
                     if (!numvalide)
                     {
                         continue;
                     }
-                    int nbtrans;
+                    int nbtrans; // nombre de transactions autorisées
                     
                     if (mot[1] == "Particulier")
                     {
@@ -55,13 +55,13 @@ namespace Projet_C_
                     gestionnaire.Nbr_transactions = nbtrans;
                      
 
-                    if (d0.ContainsKey(idgest))
+                    if (d0.ContainsKey(idgest)) // est-ce que le gestionnaire existe déjà ?
                         continue;
-                    else if (idgest < 1)
+                    else if (idgest < 1) // pas de gestionnaire négatif
                         continue;
                     else
                     {
-                        d0.Add(idgest, gestionnaire);
+                        d0.Add(idgest, gestionnaire); // ajout du gestionnaire dans le dictionnaire
                     }
                 }
             return d0;
@@ -78,7 +78,7 @@ namespace Projet_C_
         
         public string ToString()
         {
-            return Compte + " " + Date.ToString() + " " + Solde + " " + Entrée + " " + Sortie;
+            return Compte + " " + Date.ToString() + " " + Solde + " " + Entrée + " " + Sortie; // affichage liste des Comptes
         }
         public static List<Comptes> Compteslec(string input, Dictionary<int, Gestionnaires> dico0)
         {
@@ -91,18 +91,21 @@ namespace Projet_C_
                 while (!str.EndOfStream)
                 {
                     string line = str.ReadLine();
+                    // numero du compte et test si numero valide
                     int numcpt;
                     var mot = line.Split(';');
                     bool numvalide = int.TryParse(mot[0], out numcpt);
+
                     if (!numvalide)
                     {
                         continue;
                     }
+                    // solde du compte, remplacement . par , 
                     decimal solde;
-                    mot[1] = mot[1].Replace(".", ",");
+                    mot[2] = mot[2].Replace(".", ",");
                     if (string.IsNullOrWhiteSpace(mot[2]))
                     {
-                        mot[1] = "0";
+                        mot[2] = "0";
                     }
 
                     bool soldevalide = decimal.TryParse(mot[2], out solde);
@@ -114,23 +117,23 @@ namespace Projet_C_
 
                     DateTime date;
                     DateTime.TryParse(mot[1], out date);
-                    string entree;
-                    if (string.IsNullOrWhiteSpace(mot[3]) && mot[4] != string.Empty && liste.Contains(mot[0])) // pour la cloture de compte
+                    int entree;
+                    if (string.IsNullOrWhiteSpace(mot[3]) && mot[4] != string.Empty && liste.Any(compte => compte.Compte.ToString() == mot[0])) // il n'y a pas de numero de gestionnaire en entrée
+                                                                                                                                                // mais en sortie oui, est-ce que le compte est existant 
                     {
-                            foreach (KeyValuePair<int, Gestionnaires> gestion in dico0)
-                            {
+                        int.TryParse(mot[3], out entree);
+                            Gestionnaires gestionnaire = dico0[entree];
+                            List<Comptes> numcompte = gestionnaire.Comptes;
+                            Comptes dateliste = liste[numcpt];
+                            DateTime datecompte = dateliste.Date;
 
-                                Gestionnaires valeur = gestion.Value;
-                                int idgest = valeur.Identifiant;
-
-                                Gestionnaires gestionnaire = liste[idgest];
-                                string numcompte = gestionnaire.Comptes;
-
-                                if (mot[4] == numcompte)
+                                if (numcompte.Any(compte => compte.Compte == numcpt) && datecompte < date) // est-ce que le compte appartient au gestionnaire récupéré dans le fichier
+                                                                                                           // et est-ce que la date renseigné dans le fichier à une date supérieure à la 
+                                                                                                           // dernère opération du compte
                                 {
-
+                                   liste.Remove();// suppression compte
                                 }
-                            }
+                       //     }
                          // present dans la liste
                         //    if ( bon Gestionnaires) 
                         //    if (date)
@@ -151,9 +154,7 @@ namespace Projet_C_
                         // changement dans liste gestionnaire + changement date action
                     }
 
-                   // string.TryParse(mot[3], out entree);
                     string sortie ;
-                   // string.TryParse (mot[4], out sortie);
 
                     
                     Comptes comptes = new Comptes();
