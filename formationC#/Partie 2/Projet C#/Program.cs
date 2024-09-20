@@ -24,6 +24,8 @@ namespace Projet_C_
             Transactions.Transaction(dico2, liste);
 
             Transactions.Statuts(output, dico2);
+            Comptes.Cloture(input,liste,dico0);
+
             //   comptes.Compte = 3;
             //  comptes.Solde = 500;
             //   var t = comptes.Affichagesolde();
