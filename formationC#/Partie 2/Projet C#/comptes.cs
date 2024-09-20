@@ -96,7 +96,7 @@ namespace Projet_C_
                     var mot = line.Split(';');
                     bool numvalide = int.TryParse(mot[0], out numcpt);
 
-                    if (!numvalide)
+                    if (!numvalide && numcpt < 1)
                     {
                         continue;
                     }
@@ -118,58 +118,78 @@ namespace Projet_C_
                     DateTime date;
                     DateTime.TryParse(mot[1], out date);
                     int entree;
+                    int sortie;
                     if (string.IsNullOrWhiteSpace(mot[3]) && mot[4] != string.Empty && liste.Any(compte => compte.Compte.ToString() == mot[0])) // il n'y a pas de numero de gestionnaire en entrée
                                                                                                                                                 // mais en sortie oui, est-ce que le compte est existant 
                     {
-                        int.TryParse(mot[3], out entree);
-                            Gestionnaires gestionnaire = dico0[entree];
+                        int.TryParse(mot[4], out sortie);
+                            Gestionnaires gestionnaire = dico0[sortie];
                             List<Comptes> numcompte = gestionnaire.Comptes;
-                            Comptes dateliste = liste[numcpt];
-                            DateTime datecompte = dateliste.Date;
+                            Comptes compteclo = liste[numcpt];
+                            DateTime datecompte = compteclo.Date;
 
                                 if (numcompte.Any(compte => compte.Compte == numcpt) && datecompte < date) // est-ce que le compte appartient au gestionnaire récupéré dans le fichier
                                                                                                            // et est-ce que la date renseigné dans le fichier à une date supérieure à la 
                                                                                                            // dernère opération du compte
                                 {
-                                   liste.Remove();// suppression compte
+                                   liste.Remove(compteclo); // suppression compte
                                 }
-                       //     }
-                         // present dans la liste
-                        //    if ( bon Gestionnaires) 
-                        //    if (date)
-                        //
                     }
-                    if (mot[3] != string.Empty && string.IsNullOrWhiteSpace(mot[4])) // pour la creation de compte
+                    if (mot[3] != string.Empty && string.IsNullOrWhiteSpace(mot[4]) && !liste.Any(compte => compte.Compte.ToString() == mot[0])) //// il y a pas un numero de gestionnaire en entrée
+                                                                                                                                                 // mais pas en sortie, est-ce que le compte est existant ?
                     {
-                        //  if (date)
-                        //  if (Pas deja present dans la liste)
-                        // ajout dans liste + ajout dans dico le gestionnaire correspondant
+                        int.TryParse(mot[3], out entree);
+                        if (dico0.ContainsKey(entree))
+                        {
+                            Comptes comptes = new Comptes(); // ajout dans liste
+                            comptes.Compte = numcpt;
+                            comptes.Date = date;
+                            comptes.Solde = solde;
+                            comptes.Entrée = mot[3];
+                            comptes.Sortie = mot[4];
+                            liste.Add(comptes);
+
+                            List<Comptes> listecpt = new List<Comptes>(); // ajout dans dico le gestionnaire
+                            Gestionnaires gestionnaire = dico0[entree];
+                            listecpt = gestionnaire.Comptes;
+                            listecpt.Add(comptes);
+                            gestionnaire.Comptes = listecpt;
+
+                        }
                     }
 
-                    if (mot[3] != string.Empty && mot[4] != string.Empty)
-                    {
-                        // if(verif compte existant liste)
-                        // if(verif date )
-                        // if(verif bon gestionnaire)
-                        // changement dans liste gestionnaire + changement date action
+                    if (mot[3] != string.Empty && mot[4] != string.Empty && liste.Any(compte => compte.Compte.ToString() == mot[0])) // si entree et sortie renseigné, verif si
+                                                                                                                                     // compte existant
+                    { 
+                        int.TryParse(mot[3], out entree);
+                        Comptes comptemodif = liste[numcpt];
+                        DateTime datecompte = comptemodif.Date;
+                        Gestionnaires gestionnaire = new Gestionnaires();
+
+                        if (dico0.ContainsKey(entree) && dico0.TryGetValue(entree,out gestionnaire) &&  datecompte < date) // verif si compte appartient au bon gestionnaire
+                                                                                                                           // et si date est cohérente
+                        {
+                            Comptes comptes = liste[numcpt]; // modif dans liste Comptes des gestionnaires
+                            comptes.Date = datecompte;
+                            comptes.Entrée = mot[3];
+                            comptes.Sortie = mot[4];
+
+                            int.TryParse(mot[4], out sortie);
+                            Gestionnaires ajoutgest = dico0[sortie]; // ajout du compte sur le nouveau gestionnaire
+                            List<Comptes> listecpt = new List<Comptes>();
+                            listecpt = ajoutgest.Comptes;
+                            listecpt.Add(comptes);
+                            ajoutgest.Comptes = listecpt;
+
+                            Gestionnaires suppgest = dico0[entree]; // suppression du compte dans le gestionnaire 
+                            List<Comptes> listecpt2 = new List<Comptes>();
+                            listecpt2 = suppgest.Comptes;
+                            listecpt2.Remove(comptes);
+                            suppgest.Comptes = listecpt2;
+
+                        }
                     }
 
-                    string sortie ;
-
-                    
-                    Comptes comptes = new Comptes();
-                    comptes.Compte = numcpt;
-                    comptes.Date = date;
-                    comptes.Solde = solde;
-                    comptes.Entrée = mot[3];
-                    comptes.Sortie = mot[4];
-
-                    if (numcpt < 1)
-                        continue;
-                    else
-                    {
-                        liste.Add(comptes);
-                    }
                 }
             return liste;
         }
@@ -178,7 +198,7 @@ namespace Projet_C_
     public class Transactions
     {
         public int Identifiant;
-        public string Date_effet;
+        public DateTime Date_effet;
         public decimal Montant;
         public int Expéditeur;
         public int Destinataire;
@@ -196,9 +216,12 @@ namespace Projet_C_
                 {
                     string line = str.ReadLine();
                     int id;
+                   
                     decimal montant;
                     int exp;
                     int dest;
+                    DateTime date;
+                    
 
                     var mot = line.Split(';');
                     bool idvalide = int.TryParse(mot[0], out id);
@@ -206,24 +229,27 @@ namespace Projet_C_
                     {
                         continue;
                     }
-                    mot[1] = mot[1].Replace(".", ",");
-                    if(string.IsNullOrWhiteSpace(mot[1]))
+
+                    DateTime.TryParse(mot[1], out date);
+
+                    mot[2] = mot[2].Replace(".", ",");
+                    if(string.IsNullOrWhiteSpace(mot[2]))
                     {
-                        mot[1] = "0";
+                        mot[2] = "0";
                     }
 
                     //int.TryParse(mot[0], out id);
-                    bool montantvalide = decimal.TryParse(mot[1], out montant);
+                    bool montantvalide = decimal.TryParse(mot[2], out montant);
                     if (!montantvalide)
                     {
                         continue;
                     }
-                    bool expvalide = int.TryParse(mot[2], out exp);
+                    bool expvalide = int.TryParse(mot[3], out exp);
                     if (!expvalide)
                     {
                         continue;
                     }
-                    bool destvalide = int.TryParse(mot[3], out dest);
+                    bool destvalide = int.TryParse(mot[4], out dest);
                     if (!destvalide)
                     {
                         continue;
@@ -231,6 +257,7 @@ namespace Projet_C_
 
                     Transactions transactions = new Transactions();
                     transactions.Identifiant = id;
+                    transactions.Date_effet = date;
                     transactions.Montant = montant;
                     transactions.Expéditeur = exp;
                     transactions.Destinataire = dest;
